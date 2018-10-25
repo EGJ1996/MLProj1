@@ -33,6 +33,24 @@ def predict_labels(weights, data):
     return y_pred
 
 
+
+def create_submission(y1, id1, y2, id2, y3, id3, y4, id4, total_ids, name_file):
+    """
+    Reconstruct the prediction on the whole dataset starting from the partial ones obtained with the different models
+    the name_file should be in the string format 'name.csv' 
+    """
+    
+    ypred = np.zeros(len(total_ids))
+    
+    ypred[id1] = y1
+    ypred[id2] = y2
+    ypred[id3] = y3
+    ypred[id4] = y4
+    
+    create_csv_submission(total_ids, ypred, name_file)
+    
+    
+    
 def create_csv_submission(ids, y_pred, name):
     """
     Creates an output file in csv format for submission to kaggle
@@ -47,53 +65,3 @@ def create_csv_submission(ids, y_pred, name):
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({'Id':int(r1),'Prediction':int(r2)})
             
-            
-            
-            
-def compute_mse(y, tx, w):
-    """Calculate the mse."""
-
-    e = y - tx.dot(w)
-    return 1/2*np.mean(e**2)
-
-
- 
-def compute_gradient(y, tx, w):
-    """Compute the gradient."""
-    
-    e = y - tx.dot(w)
-    
-    grad = -tx.T.dot(e) / len(e)
-    return grad
-
-
-
-def standardize(x):
-    x = (x - np.mean(x,axis=0)) / np.std(x, axis=0)
-    return x
-
-
-def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
-    """
-    Generate a minibatch iterator for a dataset.
-    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
-    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
-    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
-    Example of use :
-    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
-        <DO-SOMETHING>
-    """
-    data_size = len(y)
-
-    if shuffle:
-        shuffle_indices = np.random.permutation(np.arange(data_size))
-        shuffled_y = y[shuffle_indices]
-        shuffled_tx = tx[shuffle_indices]
-    else:
-        shuffled_y = y
-        shuffled_tx = tx
-    for batch_num in range(num_batches):
-        start_index = batch_num * batch_size
-        end_index = min((batch_num + 1) * batch_size, data_size)
-        if start_index != end_index:
-            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
