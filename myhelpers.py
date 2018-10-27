@@ -127,7 +127,6 @@ def logistic_newton(y, tx, initial_w, max_iters, gamma, tol=1e-8):
     w = initial_w
     err = 1
     niter = 0
-    losses = []
     
     while niter < max_iters and err > tol:
         niter += 1
@@ -142,13 +141,11 @@ def logistic_newton(y, tx, initial_w, max_iters, gamma, tol=1e-8):
         w = w - gamma*v
         
         # Check criterium
-        losses.append(loss)
-        if len(losses) > 1:
-            err = np.abs(losses[-1] - losses[-2])            
+        err = np.linalg.norm(grad)        
             
         # Print output
         if niter % 50 == 0:
-            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g=grad.T@grad))
+            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g=err))
         
     return w, loss
 
@@ -162,7 +159,6 @@ def reg_logistic_newton(y, tx, lambda_, initial_w, max_iters, gamma, tol = 1e-8)
     w = initial_w
     err = 1
     niter = 0
-    losses = []
     
     while niter < max_iters and err > tol:
         niter += 1
@@ -177,12 +173,10 @@ def reg_logistic_newton(y, tx, lambda_, initial_w, max_iters, gamma, tol = 1e-8)
         w = w - gamma*v
         
         # Check criterium
-        losses.append(loss)
-        if len(losses) > 1:
-            err = np.abs(losses[-1] - losses[-2])            
+        err = np.linalg.norm(grad)  
             
         # Print output
         if niter % 50 == 0:
-            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g=grad.T@grad))
+            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g=err))
         
     return w, loss

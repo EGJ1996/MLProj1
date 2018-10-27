@@ -74,13 +74,12 @@ def ridge_regression(y, tx, lambda_):
     
 def logistic_regression(y, tx, initial_w, max_iters, gamma, tol=1e-8):
     """ Logistic regression using the GRADIENT DESCENT method
-        the stopping criterium is the abs of the difference of two successive losses"""
+        the stopping criterium is the norm of the gradient"""
     
     # Initializing parameters
     w = initial_w
     err = 1
     niter = 0
-    losses = []
     
     while niter < max_iters and err > tol:
         niter += 1
@@ -92,14 +91,12 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, tol=1e-8):
         # Update
         w = w - gamma*grad
         
-        # Check criterium
-        losses.append(loss)
-        if len(losses) > 1:
-            err = np.abs(losses[-1] - losses[-2])            
-            
+        # Check criterium      
+        err = np.linalg.norm(grad)
+        
         # Print output
         if niter % 50 == 0:
-            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g=grad.T@grad))
+            print("Current iteration={i}, loss={l}, norm_grad = {g}".format(i=niter, l=loss, g = err))
         
     return w, loss
     
@@ -107,13 +104,12 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, tol=1e-8):
     
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, tol = 1e-7):
     """ Regularized logistic regression using the GRADIENT DESCENT method
-        the stopping criterium is the abs of the difference of two successive losses"""
+        the stopping criterium is the norm of the gradient"""
     
     # Initializing parameters
     w = initial_w
     err = 1
     niter = 0
-    losses = []
     
     while niter < max_iters and err > tol:
         niter += 1
@@ -126,13 +122,11 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, tol = 1
         w = w - gamma*grad
         
         # Check criterium
-        losses.append(loss)
-        if len(losses) > 1:
-            err = np.abs(losses[-1] - losses[-2])
-            
+        err = np.linalg.norm(grad)
+        
         # Print output
         if niter % 50 == 0:
-            print("Current iteration={i}, loss={l}, norm_w = {n}".format(i=niter, l=loss, n=w.T@w))
+            print("Current iteration={i}, loss={l}, norm_w = {n}, norm_grad={ng}".format(i=niter, l=loss, n=np.sqrt(w.T@w), ng=err))
         
     return w, loss
     
